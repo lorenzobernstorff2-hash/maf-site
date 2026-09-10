@@ -4,9 +4,11 @@
 ========================================================= */
 
 // =====================================================================
-//  ⚠️  TODO MAF — substituir pelo número dedicado da Gaby quando fornecido.
-//  Por ora, aponta para o número comercial atual (Fe): +55 71 99159-6177.
-//  Quando o número da Gaby chegar, mudar SÓ esta constante.
+//  Número de destino dos CTAs.
+//  DECISÃO 2026-09-10 (Lorenzo): segue no comercial humano (Fe)
+//  +55 71 99159-6177 ATÉ a automação (Gaby) estar pronta — depois
+//  trocar SÓ esta constante (e os href estáticos de fallback no HTML).
+//  Número da Gaby quando chegar: +55 71 98301-7311.
 //  Todos os CTAs WhatsApp do site leem este valor em runtime.
 // =====================================================================
 const GABY_WPP = '5571991596177';
@@ -47,6 +49,103 @@ function checkOrphanWppLinks() {
       console.warn('[MAF] wa.me link com número divergente do GABY_WPP:', a);
     }
   });
+}
+
+/* =====================================================================
+   MEDIÇÃO — GA4 + Meta Pixel (2026-09-10)
+   Regras:
+   1. Sem IDs preenchidos abaixo, NADA carrega e a barra de
+      consentimento nem aparece (política de privacidade coerente).
+   2. Com IDs preenchidos, nada carrega sem consentimento explícito
+      (LGPD). Resposta fica em localStorage; "recusar" é respeitado
+      e não pergunta de novo.
+   Preencher no deploy: GA4_ID = 'G-XXXXXXXXXX',
+                         META_PIXEL_ID = '000000000000000'.
+   ===================================================================== */
+const GA4_ID = '';
+const META_PIXEL_ID = '';
+const CONSENT_KEY = 'maf_consent_v1';
+
+function getConsent() {
+  try { return localStorage.getItem(CONSENT_KEY); }
+  catch { return null; } // storage bloqueado → trata como sem resposta
+}
+
+function loadAnalytics() {
+  // GA4
+  if (GA4_ID && !window.dataLayer) {
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    gtag('js', new Date());
+    gtag('config', GA4_ID, { anonymize_ip: true });
+  }
+  // Meta Pixel
+  if (META_PIXEL_ID && !window.fbq) {
+    (function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = true; n.version = '2.0';
+      n.queue = []; t = b.createElement(e); t.async = true; t.src = v;
+      s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
+    })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('consent', 'grant');
+    fbq('init', META_PIXEL_ID);
+    fbq('track', 'PageView');
+  }
+}
+
+function initConsent() {
+  const bar = document.getElementById('consent-bar');
+  if (!bar) return;
+  // Nada a medir → sem barra, sem script, política intacta.
+  if (!GA4_ID && !META_PIXEL_ID) { bar.remove(); return; }
+
+  const stored = getConsent();
+  if (stored === 'granted') { loadAnalytics(); bar.remove(); return; }
+  if (stored === 'denied')  { bar.remove(); return; }
+
+  bar.hidden = false;
+  bar.querySelectorAll('[data-consent]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const answer = btn.getAttribute('data-consent') === 'accept' ? 'granted' : 'denied';
+      try { localStorage.setItem(CONSENT_KEY, answer); } catch { /* storage off: sessão apenas */ }
+      if (answer === 'granted') loadAnalytics();
+      bar.remove();
+    });
+  });
+}
+
+/* ---- Eventos: clique no WhatsApp (com seção de origem) + scroll 75% ---- */
+function initTracking() {
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[data-gaby], a[href^="https://wa.me/"]');
+    if (!link) return;
+    const section = link.getAttribute('data-gaby') || 'unknown';
+    if (typeof gtag === 'function') {
+      gtag('event', 'whatsapp_click', {
+        section: section,
+        page: location.pathname,
+      });
+    }
+    if (typeof fbq === 'function') {
+      fbq('track', 'Contact', { content_name: `whatsapp:${section}` });
+    }
+  });
+
+  let scrollTracked = false;
+  window.addEventListener('scroll', () => {
+    if (scrollTracked) return;
+    const pct = (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight;
+    if (pct >= 0.75) {
+      scrollTracked = true;
+      if (typeof gtag === 'function') gtag('event', 'scroll_75', { page: location.pathname });
+    }
+  }, { passive: true });
 }
 
 /* ---- Reduced-motion + touch detection ---- */
@@ -125,7 +224,7 @@ function initStickyWpp() {
 }
 
 /* ---- Hero parallax fallback (rAF-throttled) when CSS scroll-timeline unsupported,
-       only desktop + motion-ok. ---- */
+       only desktop + motion-ok. Tight range — image is at its natural 3:4. ---- */
 function initParallax() {
   if (prefersReduced) return;
   if (window.matchMedia('(max-width: 767px)').matches) return;
@@ -143,7 +242,7 @@ function initParallax() {
     requestAnimationFrame(() => {
       const rect = hero.getBoundingClientRect();
       const progress = Math.max(0, Math.min(1, -rect.top / rect.height));
-      heroImg.style.transform = `translateY(${progress * 12}%) scale(1.05)`;
+      heroImg.style.transform = `translateY(${progress * 4}%) scale(1.1)`;
       ticking = false;
     });
   };
@@ -170,6 +269,8 @@ function initSmoothScroll() {
 document.addEventListener('DOMContentLoaded', () => {
   hydrateGabyLinks();
   checkOrphanWppLinks();
+  initConsent();
+  initTracking();
   initReveal();
   initAccordion();
   initStickyWpp();

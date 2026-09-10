@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /materiais/
+
+Sitemap: https://mafprivatelabel.com.br/sitemap.xml

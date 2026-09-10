@@ -297,42 +297,52 @@ p { text-wrap: pretty; }
   .nav-cta { display: inline-flex; }
 }
 
-/* ---------- 7. HERO
-   P0.5 — overlay shorter (top breathes); content lifted off the
-   absolute bottom. ---------- */
+/* ---------- 7. HERO — split editorial (2026-09)
+   Copy on canvas left, portrait photo right at its natural 3:4 —
+   no more object-fit decapitation on a vertical source image.
+   Mobile: copy first (LCP), photo below full-bleed. ---------- */
 .hero {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  align-items: stretch;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+.hero-media {
   position: relative;
-  min-height: 100svh;
-  display: flex;
-  align-items: flex-end;
+  min-width: 0;
   overflow: hidden;
+  background: var(--surface);
+  display: flex;
 }
-.hero-media { position: absolute; inset: 0; z-index: 0; }
 .hero-img {
-  width: 100%; height: 100%;
+  width: 100%;
+  height: auto;             /* natural ratio via width/height attrs — no crop */
   object-fit: cover;
-  object-position: center 30%;
+  align-self: center;
   will-change: transform;
-}
-.hero-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(to top,
-    var(--ink-72) 0%,
-    transparent 45%);
 }
 .hero-content {
   position: relative;
   z-index: 2;
-  padding-block: clamp(2rem, 5vw, 4rem) clamp(6rem, 12vw, 10rem);
-  color: var(--bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: clamp(4rem, 9vw, 8rem);
+  color: var(--ink);
   max-width: 60ch;
+}
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-media { order: 2; }
+  .hero-content { padding-block: clamp(3.5rem, 9vw, 5rem) clamp(2rem, 5vw, 3rem); }
 }
 .hero-eyebrow-secondary {
   font-family: var(--font-display);
   font-style: italic;
   font-size: clamp(1rem, 1.5vw, 1.25rem);
-  color: var(--bg);
-  opacity: 0.78;
+  color: var(--accent-1);
+  opacity: 0.9;
   margin-bottom: 0.75rem;
 }
 .hero-title {
@@ -347,7 +357,7 @@ p { text-wrap: pretty; }
   font-size: var(--t-body);
   line-height: 1.55;
   max-width: 48ch;
-  opacity: 0.96;
+  color: var(--ink-88);
   margin-bottom: var(--s-4);
 }
 .hero-cta { display: flex; flex-wrap: wrap; gap: var(--s-2); }
@@ -519,26 +529,22 @@ p { text-wrap: pretty; }
 .comp-table tbody tr:last-child th { border-bottom: 0; }
 .comp-table strong { font-weight: 600; color: var(--ink); }
 
-/* ---------- 10. LOOKBOOK
-   P1.10 — caption below image, italic Fraunces code; varied
-   aspect ratios; minimal hover (image zoom only). ---------- */
+/* ---------- 10. LOOKBOOK (2026-09)
+   Editorial 4-col grid: featured tile spans 2×2, four 1×1 tiles.
+   Every frame is 3:4 — the natural ratio of the source photos —
+   so nothing gets cropped. ---------- */
 .section-lookbook { background: var(--surface); border-bottom: 1px solid var(--line); }
 .lookbook-grid {
   display: grid;
-  grid-template-columns: 1.7fr 1fr;
-  gap: clamp(1.5rem, 3vw, 2.5rem);
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(1rem, 2vw, 1.75rem);
   align-items: start;
   margin-top: var(--s-4);
 }
-.look-wide .look { aspect-ratio: 16 / 11; }
-.look-stack {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: clamp(1rem, 2vw, 1.5rem);
-  min-width: 0; /* contain children inside the parent grid track */
+.look-tile.featured {
+  grid-column: span 2;
+  grid-row: span 2;
 }
-.look-stack .look { aspect-ratio: 3 / 4; }
 
 .look-tile {
   display: flex;
@@ -554,7 +560,7 @@ p { text-wrap: pretty; }
   background: var(--bg);
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 11 / 15;   /* natural ratio of the lookbook assets (0.729) */
   isolation: isolate;
 }
 .look img {
@@ -590,12 +596,11 @@ p { text-wrap: pretty; }
 }
 
 @media (max-width: 900px) {
-  .lookbook-grid { grid-template-columns: 1fr; }
-  .look-stack { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+  .lookbook-grid { grid-template-columns: repeat(2, 1fr); }
+  .look-tile.featured { grid-column: auto; grid-row: auto; }
 }
 @media (max-width: 560px) {
-  .look-stack { grid-template-columns: 1fr; grid-template-rows: auto auto auto auto; }
-  .look-stack .look { aspect-ratio: 4 / 5; }
+  .lookbook-grid { grid-template-columns: 1fr; }
 }
 
 /* ---------- 11. TECIDO
@@ -742,7 +747,7 @@ p { text-wrap: pretty; }
 }
 .pers-aside img {
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 5 / 8;   /* natural ratio of mood_private_label_dev.jpg (999×1600) */
   object-fit: cover;
   border-radius: 4px;
 }
@@ -1224,7 +1229,9 @@ p { text-wrap: pretty; }
   transform: translateY(0);
 }
 
-/* Hero parallax — progressive enhancement via scroll-timeline */
+/* Hero parallax — progressive enhancement via scroll-timeline.
+   Tight range: image sits at its natural 3:4, so a wider travel
+   would reveal the media column's background. */
 @supports (animation-timeline: scroll()) {
   @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
     .hero-img {
@@ -1233,8 +1240,8 @@ p { text-wrap: pretty; }
       animation-range: 0 100vh;
     }
     @keyframes hero-parallax {
-      from { transform: scale(1.05) translateY(0); }
-      to   { transform: scale(1.12) translateY(-12%); }
+      from { transform: scale(1.1) translateY(0); }
+      to   { transform: scale(1.12) translateY(-4%); }
     }
   }
 }
@@ -1254,6 +1261,212 @@ p { text-wrap: pretty; }
 
 /* ---------- 21. SCROLL MARGIN ---------- */
 :target, [id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
+
+/* ---------- 22. EXTRAS (2026-09 improvement pass) ---------- */
+
+/* Comparativo: drag hint + edge fade on mobile (table is scrollable) */
+.comp-hint {
+  display: none;
+  font-size: var(--t-spec);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-top: 0.75rem;
+  align-items: center;
+  gap: 0.4em;
+}
+.comp-hint .card-arrow { color: var(--accent-1); }
+@media (max-width: 760px) {
+  .comp-hint { display: inline-flex; }
+  .comp-table-wrap {
+    mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+  }
+}
+
+/* Prova social — stat band (institutional, verifiable numbers only) */
+.section-prova { background: var(--surface); border-top: 1px solid var(--line); }
+.prova-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  margin-top: var(--s-4);
+}
+@media (max-width: 860px) { .prova-grid { grid-template-columns: 1fr 1fr; } }
+.prova-stat { border-top: 2px solid var(--ink); padding-top: var(--s-2); }
+.prova-num {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.prova-label {
+  font-size: var(--t-body-sm);
+  color: var(--muted);
+  margin-top: 0.5rem;
+  line-height: 1.45;
+  max-width: 24ch;
+}
+.prova-quote {
+  margin-top: var(--s-6);
+  border-left: 3px solid var(--accent-1);
+  padding-left: var(--s-4);
+  max-width: 52ch;
+}
+.prova-quote p {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  line-height: 1.35;
+  color: var(--ink);
+}
+.prova-quote cite {
+  display: block;
+  margin-top: 0.75rem;
+  font-family: var(--font-body);
+  font-style: normal;
+  font-size: var(--t-spec);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+/* ---------- 23. SUBPÁGINAS DE MODALIDADE (2026-09) ---------- */
+.page-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  align-items: stretch;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+.page-hero-media {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--surface);
+  display: flex;
+}
+.page-hero-media img {
+  width: 100%;
+  height: auto;             /* natural ratio via width/height attrs — no crop */
+  object-fit: cover;
+  align-self: center;
+}
+.page-hero-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: clamp(3rem, 7vw, 6rem);
+  max-width: 60ch;
+}
+.page-hero-content .hero-title {
+  font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+}
+@media (max-width: 900px) {
+  .page-hero { grid-template-columns: 1fr; }
+  .page-hero-media { order: 2; }
+  .page-hero-content { padding-block: clamp(3rem, 8vw, 4rem) clamp(1.5rem, 4vw, 2.5rem); }
+}
+
+/* Spec sheet nas subpáginas — linhas rotuladas, leitura rápida */
+.spec-list {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+.spec-list li {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) 3fr;
+  gap: var(--s-3);
+  padding-block: var(--s-2);
+  border-bottom: 1px solid var(--line);
+  font-size: var(--t-body-sm);
+}
+.spec-list .spec-k {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: var(--t-spec);
+  color: var(--muted);
+  padding-top: 0.15em;
+}
+.spec-list .spec-v { color: var(--ink); line-height: 1.55; }
+.spec-list .spec-v strong { font-weight: 600; }
+@media (max-width: 620px) {
+  .spec-list li { grid-template-columns: 1fr; gap: 0.25rem; }
+}
+
+/* Bloco de benefícios em checklist (subpáginas) */
+.benefit-list {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--s-3);
+  display: grid;
+  gap: var(--s-2);
+}
+.benefit-list li {
+  position: relative;
+  padding-left: 2rem;
+  font-size: var(--t-body);
+  color: var(--ink-88);
+  line-height: 1.55;
+}
+.benefit-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 10px;
+  height: 6px;
+  border-left: 2px solid var(--accent-1);
+  border-bottom: 2px solid var(--accent-1);
+  transform: rotate(-45deg);
+}
+
+/* Breadcrumb discreto nas subpáginas */
+.crumb {
+  font-size: var(--t-spec);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: var(--s-2);
+}
+.crumb a { color: var(--muted); }
+.crumb a:hover { color: var(--accent-1); }
+
+/* ---------- 24. CONSENTIMENTO (LGPD) — barra discreta ---------- */
+.consent-bar {
+  position: fixed;
+  left: clamp(1rem, 2vw, 1.5rem);
+  right: clamp(1rem, 2vw, 1.5rem);
+  bottom: clamp(1rem, 2vw, 1.5rem);
+  z-index: 95;
+  max-width: 560px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent-1);
+  border-radius: 4px;
+  padding: var(--s-3);
+  box-shadow: 0 18px 40px -18px rgba(28, 24, 20, 0.45);
+  font-size: var(--t-body-sm);
+  color: var(--ink-88);
+  line-height: 1.55;
+}
+.consent-bar[hidden] { display: none !important; }
+.consent-bar p { margin-bottom: var(--s-2); }
+.consent-bar a { text-decoration: underline; text-underline-offset: 2px; }
+.consent-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+@media (max-width: 767px) {
+  /* não briga com a barra fixa de WhatsApp no mobile: sobe */
+  .consent-bar { bottom: calc(56px + 5.25rem); }
+}
 
 /* Selection */
 ::selection { background: var(--accent-1); color: var(--bg); }
