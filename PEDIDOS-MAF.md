@@ -23,8 +23,9 @@
   2. habilitar a vitrine pública no site (página /catalogo) — decidimos NÃO publicar os
      PDFs atuais porque expõem a tabela de atacado completa.
 - **"Tabela genérica"** (imagem "tops a partir de X, leggings a partir de Y") — SPEC §19.3,
-  4º slug da tool `enviar_material`.
-- **Vídeo de boas-vindas + PDF resumo dos 3 modos** — SPEC §19.1, trava a abertura nova do bot.
+  5º slug da tool `enviar_material` (o 4º, a imagem-resumo dos 3 caminhos, já está pronta).
+- **Vídeo de boas-vindas** — SPEC §19.1, trava a abertura nova do bot (a imagem-resumo dos 3
+  modos já existe: `materiais/resumo-tres-caminhos-cd3d79.png`).
 
 ## Confirmações comerciais (meio minuto do João)
 
