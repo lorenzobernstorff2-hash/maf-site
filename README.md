@@ -17,7 +17,7 @@ site/
 ├── Dockerfile            # nginx:alpine + conf + arquivos
 ├── robots.txt / sitemap.xml
 ├── assets/               # JPGs originais + variantes WebP (.wNNN.webp) + favicon + og-cover
-├── materiais/            # PDFs de catálogo + imagem-resumo (enviados pela Gaby via link direto)
+├── materiais/            # PDFs de catálogo e de etiqueta DTF (enviados pela Gaby via link direto)
 ├── PEDIDOS-MAF.md        # Insumos pendentes do cliente (fotos, depoimentos, catálogos)
 └── README.md             # Este arquivo
 ```
