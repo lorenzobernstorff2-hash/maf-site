@@ -42,7 +42,7 @@ Nota: URLs limpas (`/white-label`) só funcionam via nginx (Docker); no `http.se
 
 ## Número do WhatsApp (GABY_WPP)
 
-**Decisão 2026-09-10 (Lorenzo): o site aponta para o comercial humano (Fe), +55 71 99159-6177, ATÉ a automação (Gaby) estar pronta.** Quando trocar: editar `GABY_WPP` no topo de `script.js` **e** os `href` estáticos de fallback (`https://wa.me/…`) em todos os HTMLs. O número da Gaby é **+55 71 98301-7311**.
+**Desde o go-live de 17/11/2026 o site aponta para a Gaby (automação), +55 71 98301-7311.** Até lá apontava para o comercial humano (Fe), +55 71 99159-6177 (decisão de 2026-09-10). Para trocar: editar `GABY_WPP` no topo de `script.js` **e** os `href` estáticos de fallback (`https://wa.me/…`) em todos os HTMLs.
 
 Mensagens pré-preenchidas (`GABY_MSG` em `script.js`), via `data-gaby="<chave>"`:
 
