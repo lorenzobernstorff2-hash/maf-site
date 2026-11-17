@@ -5,13 +5,13 @@
 
 // =====================================================================
 //  Número de destino dos CTAs.
-//  DECISÃO 2026-09-10 (Lorenzo): segue no comercial humano (Fe)
-//  +55 71 99159-6177 ATÉ a automação (Gaby) estar pronta — depois
-//  trocar SÓ esta constante (e os href estáticos de fallback no HTML).
-//  Número da Gaby quando chegar: +55 71 98301-7311.
+//  Desde o go-live de 17/11/2026 é o da Gaby (automação),
+//  +55 71 98301-7311. Antes era o comercial humano (Fe),
+//  +55 71 99159-6177 (decisão de 2026-09-10). Trocar = esta constante
+//  e os href estáticos de fallback no HTML.
 //  Todos os CTAs WhatsApp do site leem este valor em runtime.
 // =====================================================================
-const GABY_WPP = '5571991596177';
+const GABY_WPP = '5571983017311';
 
 const GABY_MSG = {
   default:  'Olá! Vi o site da MAF e quero falar sobre private label.',
