@@ -11,6 +11,12 @@ site/
 ├── private-label.html    # Página de modalidade (/private-label)
 ├── desenvolvimento.html  # Página de modalidade (/desenvolvimento)
 ├── privacidade.html      # Política de privacidade (LGPD)
+├── contato.html / sobre.html   # Páginas institucionais (/contato, /sobre)
+├── guias.html            # Índice dos guias de conteúdo (/guias)
+├── como-criar-marca-de-roupa-fitness.html, white-label-ou-private-label.html,
+│   fornecedor-moda-fitness-marca-propria.html, private-label-beachwear.html   # Guias (busca orgânica)
+├── llms.txt              # Resumo do site pra assistentes de IA (73% das visitas vêm do ChatGPT)
+├── tests/                # condicoes.sh (condições = as da Gaby) e paginas.sh (sitemap, links, SEO básico)
 ├── styles.css            # Tokens, tipo, layout, motion, a11y, consent bar, page-hero
 ├── script.js             # GABY_WPP, gabyLink(), reveal, accordion, sticky, medição (GA4+Pixel)
 ├── nginx-default.conf    # URLs limpas, redirect www→apex, gzip, cache headers

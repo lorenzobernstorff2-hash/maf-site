@@ -3,7 +3,7 @@
 # do repo maf-private-label). Falha se uma condição vencida voltar a aparecer.
 #   tests/condicoes.sh
 cd "$(dirname "$0")/.." || exit 2
-PAGINAS=(index.html white-label.html private-label.html desenvolvimento.html)
+PAGINAS=($(ls *.html | grep -v privacidade) llms.txt)
 falhas=0
 proibido() { # <descrição> <regex>
   local achou
@@ -21,7 +21,7 @@ proibido "percentual da composição do tecido (os catálogos somam 101%)" '85% 
 proibido "desconto de volume em percentual (preço vem da tabela)" '7,5%|15%'
 proibido "cliente envia o DTF impresso (a MAF imprime a partir da logo)" 'arte impressa|impressa em DTF'
 proibido "DTF sem custo no Private Label (só a etiqueta é isenta)" 'DTF (e|\+) etiqueta[^.<]*sem custo'
-for p in "${PAGINAS[@]}"; do exigido "cartão em até 4x" "$p" 'até (<strong>)?4x sem juros'; done
+for p in index.html white-label.html private-label.html desenvolvimento.html; do exigido "cartão em até 4x" "$p" 'até (<strong>)?4x sem juros'; done
 exigido "parcela mínima de R\$ 200" index.html 'parcela mínima de R\$ 200'
 exigido "impressão do DTF R\$ 100 por cor" white-label.html 'R\$ 100,00[^<]*por cor'
 exigido "vetorização R\$ 30" white-label.html 'R\$ 30,00'
