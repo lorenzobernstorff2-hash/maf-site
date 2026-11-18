@@ -16,7 +16,8 @@ site/
 ├── como-criar-marca-de-roupa-fitness.html, white-label-ou-private-label.html,
 │   fornecedor-moda-fitness-marca-propria.html, private-label-beachwear.html   # Guias (busca orgânica)
 ├── llms.txt              # Resumo do site pra assistentes de IA (73% das visitas vêm do ChatGPT)
-├── tests/                # condicoes.sh (condições = as da Gaby) e paginas.sh (sitemap, links, SEO básico)
+├── tests/                # condicoes.json (fonte única dos números), condicoes.sh, paridade.py (× Gaby), paginas.sh, imagem.sh
+├── scripts/deploy.sh     # único caminho de deploy
 ├── styles.css            # Tokens, tipo, layout, motion, a11y, consent bar, page-hero
 ├── script.js             # GABY_WPP, gabyLink(), reveal, accordion, sticky, medição (GA4+Pixel)
 ├── nginx-default.conf    # URLs limpas, redirect www→apex, gzip, cache headers
@@ -71,11 +72,36 @@ Para ativar: criar Pixel no Gerenciador de Eventos da BM (1540666449372240) + pr
 
 ## Dados comerciais exibidos
 
-Fonte canônica: `maf/docs/SPEC.md` §16-§19. Mudou a SPEC → conferir home (comparativo + FAQ) e as 3 páginas de modalidade. Pontos vivos: WL 6 peças mix livre (compra teste 1-5 +20%), prazo WL "a partir de 5 dias corridos", PC 10/cor ≈R$ 600, Desenv 40/modelo a partir de R$ 20 mil (prazo não destacado — decisão Ata 01 §17.1.7), PIX 5% / 3x sem juros, frete cotado no orçamento.
+Quem manda nas condições é a Gaby (repo `maf-private-label`). O site só repete.
+
+- `tests/condicoes.json` é a fonte única dos números que o site mostra, cada um com a origem (constante do `pricing.ts` da Gaby ou tabela do ERP). Fica em `tests/` porque carrega o desconto do PIX, que o site não mostra.
+- Mudou uma condição: mudar no JSON e rodar `tests/condicoes.sh`. Ele aponta as páginas que ficaram com o número velho.
+- `tests/paridade.py` compara o JSON com a main remota da Gaby. Falha em número divergente, em constante nova ou extinta e quando não consegue ler a Gaby. Texto livre dela (base, prompt, abertura) e preço do ERP não dão pra comparar por máquina: viram aviso. Depois de reler o texto, `tests/paridade.py --gravar-prosa`; depois de conferir a tabela do ERP, atualizar `erp.conferido_em`.
+- A mesma paridade roda no fim do deploy da Gaby (`gaby/scripts/deploy.sh`), como aviso.
+
+## Medição própria do clique de WhatsApp
+
+Sem cookie e sem login. A cada clique num botão de WhatsApp o `script.js` avisa `/w/<chave>?p=<página>&o=<origem>`; o nginx responde 204 e a linha fica no log de acesso. A origem é o `utm_source` ou o site de onde a visita veio (`direto` quando não há), guardada só na aba.
+
+Ler os cliques (por botão, página e origem):
+
+```bash
+for c in $(ssh orion-vps 'docker ps -a --filter name=redis_maf-app -q'); do ssh orion-vps "docker logs $c 2>&1"; done \
+  | grep -o 'GET /w/[^ ]*' | sort | uniq -c | sort -rn
+```
+
+Limite: o log vive nos containers. Os parados guardam o histórico, mas o Docker só mantém os últimos; sem volume próprio, o que for mais antigo que alguns deploys se perde.
 
 ## Deploy no Easypanel
 
-Serviço `redis/maf-app` — build a partir deste repo (GitHub `lorenzobernstorff2-hash/maf-site`), deploy manual (`services.app.deployService`) **com confirmação do Lorenzo**. HTTPS via proxy Easypanel; o container nginx só trata roteamento/redirect www.
+Serviço `redis/maf-app`, build a partir da `main` deste repo. **Sempre com confirmação do Lorenzo**, e por um caminho só:
+
+```bash
+scripts/deploy.sh          # testa a main remota, confere com a Gaby, sobe e prova no ar
+scripts/deploy.sh --seco   # só testa; nada sobe
+```
+
+Ele recusa subir se um teste falhar ou se a paridade não puder ser conferida. A prova é cada página servida igual à da main, os arquivos internos respondendo 404 e o `/w/` respondendo 204. O `Dockerfile` copia só o que é público, por lista: arquivo novo que deva ir ao ar entra nela (e em `tests/imagem.sh`). HTTPS via proxy do Easypanel; o nginx do container só trata roteamento e redirects.
 
 ## Regras inegociáveis
 
