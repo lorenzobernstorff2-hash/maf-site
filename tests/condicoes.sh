@@ -17,6 +17,7 @@ proibido "PIX com 5% (hoje 3%, e só se o cliente pergunta)" 'PIX com 5%|5% de d
 proibido "cartão em 3x (hoje até 4x, parcela mínima R\$ 200)" '3x sem juros'
 proibido "etiqueta costurada (não existe, é pendurada)" 'etiqueta costurada'
 proibido "compra teste de 1 a 5 peças (saiu de linha em 30/10)" 'compra teste|\+20%'
+proibido "percentual da composição do tecido (os catálogos somam 101%)" '85% poliamida|16% elastano'
 proibido "desconto de volume em percentual (preço vem da tabela)" '7,5%|15%'
 proibido "cliente envia o DTF impresso (a MAF imprime a partir da logo)" 'arte impressa|impressa em DTF'
 proibido "DTF sem custo no Private Label (só a etiqueta é isenta)" 'DTF (e|\+) etiqueta[^.<]*sem custo'
