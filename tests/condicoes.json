@@ -37,7 +37,8 @@
   },
   "ignoradas": {
     "PISO_ATACADO_BPS": "trava interna de sanidade do preço de atacado",
-    "HANDOFF_ACIMA_DE_CENTAVOS": "regra interna de quando passar pro time comercial"
+    "HANDOFF_ACIMA_DE_CENTAVOS": "regra interna de quando passar pro time comercial",
+    "FRETE_TEXTO": "texto, não número; o site diz que o frete é cotado por CEP no orçamento"
   },
   "erp": {
     "_origem": "tabelas de preço do GestãoClick e SPEC; não há constante na Gaby, a conferência é manual",

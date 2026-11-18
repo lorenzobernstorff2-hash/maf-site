@@ -87,7 +87,7 @@ Ler os cliques (por botão, página e origem):
 
 ```bash
 for c in $(ssh orion-vps 'docker ps -a --filter name=redis_maf-app -q'); do ssh orion-vps "docker logs $c 2>&1"; done \
-  | grep -o 'GET /w/[^ ]*' | sort | uniq -c | sort -rn
+  | grep -o 'POST /w/[^ ]*' | sort | uniq -c | sort -rn
 ```
 
 Limite: o log vive nos containers. Os parados guardam o histórico, mas o Docker só mantém os últimos; sem volume próprio, o que for mais antigo que alguns deploys se perde.

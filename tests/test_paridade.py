@@ -29,7 +29,7 @@ CONDICOES = {
         "PRAZO_DIAS": {"white_label": 5, "private_catalogo": 60},
         "UNIDADE_PRAZO": {"white_label": "dias", "private_catalogo": "dias úteis"},
     },
-    "ignoradas": {"PISO_ATACADO_BPS": "interna"},
+    "ignoradas": {"PISO_ATACADO_BPS": "interna", "FRETE_TEXTO": "texto"},
 }
 
 
@@ -73,9 +73,17 @@ class Comparar(unittest.TestCase):
         sem = PRICING.replace("export const MINIMO_TABELA_ATACADO = 20;", "")
         self.assertIn("MINIMO_TABELA_ATACADO", paridade.comparar(sem, CONDICOES)[0])
 
-    def test_ignorada_e_texto_nao_acusam(self):
+    def test_ignorada_nao_acusa(self):
         self.assertNotIn("PISO_ATACADO_BPS", " ".join(paridade.comparar(PRICING, CONDICOES)))
-        self.assertNotIn("FRETE_TEXTO", paridade.ler_pricing(PRICING))
+
+    def test_constante_exportada_em_formato_que_nao_sei_ler_acusa(self):
+        for linha in ("export const TAXA_NOVA = 5 * 100;", "export const TAXA_NOVA = 1.5;",
+                      "export const TAXA_NOVA = -5;", "  export  const TAXA_NOVA = 5 as const;",
+                      "export const TAXA_NOVA = 'texto';"):
+            falhas = paridade.comparar(PRICING + linha + "\n", CONDICOES)
+            self.assertEqual(len(falhas), 1, linha)
+            self.assertIn("TAXA_NOVA", falhas[0])
+            self.assertIn("formato", falhas[0])
 
 
 class Avisos(unittest.TestCase):

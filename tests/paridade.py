@@ -14,7 +14,8 @@ fetch falhou): nunca passa verde sem ter conferido. Texto livre da Gaby
 (base de conhecimento, prompt, abertura) e preço que vem do ERP não dão pra
 comparar por máquina: viram AVISO (sai 0) pedindo releitura.
 
-Limite: compara com a main remota da Gaby, que pode estar à frente do que está
+Limites: só enxerga constante EXPORTADA (mais o UNIDADE_PRAZO); condição nova
+guardada numa constante interna da Gaby não aparece aqui. E compara com a main remota da Gaby, que pode estar à frente do que está
 no ar. Condição mergeada lá e ainda não deployada: não publicar no site antes.
 """
 import datetime
@@ -32,6 +33,7 @@ REPO_GABY = "maf-private-label"
 VALIDADE_ERP_DIAS = 45
 
 NUMERO = re.compile(r"^export const ([A-Z][A-Z0-9_]*)(?:\s*:[^=]+)?\s*=\s*([0-9][0-9_]*);", re.M)
+EXPORTADA = re.compile(r"^\s*export\s+const\s+([A-Z][A-Z0-9_]*)\b", re.M)
 BLOCO = r"^(?:export )?const %s\b[^=]*=\s*\{(.*?)^\};"
 ITEM = re.compile(r"^\s*([a-z_]+):\s*(?:([0-9][0-9_]*)|'([^']*)'),", re.M)
 
@@ -64,7 +66,13 @@ def comparar(texto_pricing, condicoes):
     gaby = _achatar(ler_pricing(texto_pricing))
     site = _achatar({k: v for k, v in condicoes["gaby"].items() if not k.startswith("_")})
     ignoradas = condicoes.get("ignoradas", {})
-    falhas = []
+    lidas = ler_pricing(texto_pricing)
+    falhas = [
+        f"{nome} é exportada pela Gaby num formato que não sei ler (conferir à mão e pôr em "
+        "'ignoradas' com o motivo, ou ensinar o formato a este script)"
+        for nome in sorted(set(EXPORTADA.findall(texto_pricing)))
+        if nome not in lidas and nome not in ignoradas
+    ]
     for nome in sorted(set(gaby) | set(site)):
         if nome in ignoradas:
             continue
