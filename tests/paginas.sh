@@ -36,5 +36,20 @@ done
 for regra in 'location = /favicon.ico' 'location = /apple-touch-icon.png' '/fale-conosco' '/politica-de-privacidade'; do
   grep -q -- "$regra" nginx-default.conf || erro "nginx sem a regra: $regra"
 done
+# Medição própria do clique de WhatsApp (sem cookie): o script avisa /w/<chave>,
+# o nginx responde 204 e a linha fica no log de acesso. O link do botão segue
+# direto pro WhatsApp: a medição não fica no caminho do lead.
+grep -q -F "navigator.sendBeacon('/w/" script.js || erro "script.js não avisa o clique em /w/"
+grep -q -E 'location /w/ *\{ *return 204; *\}' nginx-default.conf || erro "nginx sem o /w/ que responde 204"
+grep -q -x 'Disallow: /w/' robots.txt || erro "robots.txt deixa robô entrar em /w/"
+versoes=$(grep -h -o 'script\.js?v=[0-9]*' *.html | sort -u | wc -l)
+[[ $versoes -eq 1 ]] || erro "páginas com versões diferentes do script.js (?v=)"
+# Menu e rodapé são copiados à mão em cada página interna: têm de ser idênticos.
+# A home e a /privacidade têm os seus, mais completos, de propósito.
+for bloco in nav footer; do
+  variantes=$(for f in $(ls *.html | grep -v -x -e index.html -e privacidade.html); do
+    awk "/<$bloco/,/<\\/$bloco>/" "$f" | md5; done | sort -u | wc -l)
+  [[ $variantes -eq 1 ]] || erro "<$bloco> diferente entre as páginas internas ($variantes versões)"
+done
 [[ $falhas -eq 0 ]] && echo "páginas: ok"
 exit $falhas
