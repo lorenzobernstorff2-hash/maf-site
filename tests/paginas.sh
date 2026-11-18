@@ -48,7 +48,7 @@ versoes=$(grep -h -o 'script\.js?v=[0-9]*' *.html | sort -u | wc -l)
 # A home e a /privacidade têm os seus, mais completos, de propósito.
 for bloco in nav footer; do
   variantes=$(for f in $(ls *.html | grep -v -x -e index.html -e privacidade.html); do
-    awk "/<$bloco/,/<\\/$bloco>/" "$f" | md5; done | sort -u | wc -l)
+    awk "/<$bloco/,/<\\/$bloco>/" "$f" | cksum; done | sort -u | wc -l)
   [[ $variantes -eq 1 ]] || erro "<$bloco> diferente entre as páginas internas ($variantes versões)"
 done
 [[ $falhas -eq 0 ]] && echo "páginas: ok"
