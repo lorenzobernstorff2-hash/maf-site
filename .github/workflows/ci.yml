@@ -1,0 +1,23 @@
+# Roda em todo PR e na main os testes que não dependem do repo da Gaby.
+# A paridade com a Gaby (tests/paridade.py) fica de fora de propósito: o repo
+# dela é privado. Ela roda no scripts/deploy.sh e no deploy da própria Gaby.
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: tests/imagem.sh
+      - run: tests/condicoes.sh
+      - run: tests/paginas.sh
+      - run: python3 tests/test_paridade.py
+      - run: node --check script.js
+      - name: A imagem constrói e o nginx aceita a configuração
+        run: docker build -t site . && docker run --rm site nginx -t
