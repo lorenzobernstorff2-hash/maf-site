@@ -9,7 +9,7 @@ for interno in PEDIDOS-MAF.md README.md Dockerfile nginx-default.conf tests scri
   grep -E '^COPY ' Dockerfile | grep -v 'nginx-default.conf /etc/nginx' | grep -q -w -- "$interno" &&
     { echo "FALHA — Dockerfile leva $interno pro site"; falhas=1; }
 done
-for f in *.html styles.css script.js robots.txt sitemap.xml; do
+for f in *.html styles.css script.js robots.txt sitemap.xml llms.txt; do
   [[ -f "$f" ]] || { echo "FALHA — o Dockerfile copia $f e ele não existe"; falhas=1; }
 done
 [[ $falhas -eq 0 ]] && echo "imagem: ok"

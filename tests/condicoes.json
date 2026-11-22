@@ -1,0 +1,60 @@
+{
+  "_leia": "Fonte única dos números comerciais que o site mostra. Mudou uma condição: mude AQUI, rode tests/condicoes.sh (ele diz em que páginas o texto ficou velho) e tests/paridade.py (confere com a Gaby). Fica em tests/ de propósito: não entra na imagem do site.",
+  "gaby": {
+    "_origem": "constantes exportadas de src/tenants/maf/pricing.ts no repo maf-private-label; valores iguais aos de lá (centavos e bps como estão)",
+    "MINIMO_WHITE_LABEL_TOTAL": 6,
+    "MINIMO_TABELA_ATACADO": 20,
+    "MINIMO_PRIVATE_CATALOGO_POR_MODELO_COR": 10,
+    "MINIMO_DESENVOLVIMENTO_POR_MODELO": 40,
+    "MAXIMO_CORES_DESENVOLVIMENTO": 2,
+    "MINIMO_DESENVOLVIMENTO_POR_COR": 20,
+    "MAX_PARCELAS_CARTAO": 4,
+    "PARCELA_MINIMA_CENTAVOS": 20000,
+    "DTF_CENTAVOS_POR_APLICACAO": 200,
+    "ETIQUETA_CENTAVOS_POR_APLICACAO": 100,
+    "IMPRESSAO_DTF_CENTAVOS": 10000,
+    "MAX_CORES_LOGO_DTF": 2,
+    "VETORIZACAO_LOGO_CENTAVOS": 3000,
+    "DESCONTO_PIX_BPS": 300,
+    "PRAZO_DIAS": {
+      "white_label": 5,
+      "private_catalogo": 60,
+      "private_desenvolvimento": 90,
+      "personalizacao": 5,
+      "personalizacao_dtf": 15
+    },
+    "UNIDADE_PRAZO": {
+      "white_label": "dias",
+      "private_catalogo": "dias úteis",
+      "private_desenvolvimento": "dias úteis",
+      "personalizacao": "dias úteis",
+      "personalizacao_dtf": "dias úteis"
+    }
+  },
+  "nao_aparece_no_site": {
+    "DESCONTO_PIX_BPS": "o desconto do PIX só se fala quando o cliente pergunta (roteiro 28/10/2026)",
+    "PRAZO_DIAS.private_desenvolvimento": "o site não destaca prazo do Desenvolvimento (ata 19/08/2026)"
+  },
+  "ignoradas": {
+    "PISO_ATACADO_BPS": "trava interna de sanidade do preço de atacado",
+    "HANDOFF_ACIMA_DE_CENTAVOS": "regra interna de quando passar pro time comercial",
+    "FRETE_TEXTO": "texto, não número; o site diz que o frete é cotado por CEP no orçamento"
+  },
+  "erp": {
+    "_origem": "tabelas de preço do GestãoClick e SPEC; não há constante na Gaby, a conferência é manual",
+    "conferido_em": "2026-09-10",
+    "private_catalogo_preco_peca_reais": 60,
+    "private_catalogo_investimento_inicial_reais": 600,
+    "desenvolvimento_investimento_minimo_reais": 20000
+  },
+  "prosa": {
+    "_origem": "texto livre da Gaby que também carrega condição; mudou = reler o diff e regravar com tests/paridade.py --gravar-prosa",
+    "arquivos": [
+      "src/tenants/maf/kb/modalidades.md",
+      "src/tenants/maf/prompt.md",
+      "src/tenants/maf/resposta-abertura.ts"
+    ],
+    "conferido_em": "2026-11-22",
+    "sha256": "b56e23352d567d74653d1180e99e2403f3d1183a43c3dfbcc0a36b2d735392da"
+  }
+}

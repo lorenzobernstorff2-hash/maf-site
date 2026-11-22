@@ -120,12 +120,38 @@ function initConsent() {
   });
 }
 
+/* ---- Medição própria, sem cookie: de onde a visita veio (guardado só na aba)
+       e um aviso ao servidor a cada clique no WhatsApp. O servidor responde
+       204 em /w/ e a linha fica no log de acesso; como ler está no README.
+       Nada disso fica no caminho do link: se falhar, o WhatsApp abre igual. ---- */
+function origemDaVisita() {
+  try {
+    const guardada = sessionStorage.getItem('maf_origem');
+    if (guardada) return guardada;
+    const utm = new URLSearchParams(location.search).get('utm_source');
+    const veioDe = document.referrer ? new URL(document.referrer).hostname : '';
+    const origem = (utm || (veioDe && veioDe !== location.hostname ? veioDe : '') || 'direto').slice(0, 60);
+    sessionStorage.setItem('maf_origem', origem);
+    return origem;
+  } catch (e) {
+    return 'desconhecida';
+  }
+}
+
+function avisarClique(chave) {
+  try {
+    const dados = new URLSearchParams({ p: location.pathname, o: origemDaVisita() });
+    navigator.sendBeacon('/w/' + encodeURIComponent(chave) + '?' + dados);
+  } catch (e) { /* medição nunca atrapalha o clique */ }
+}
+
 /* ---- Eventos: clique no WhatsApp (com seção de origem) + scroll 75% ---- */
 function initTracking() {
   document.addEventListener('click', (e) => {
     const link = e.target.closest('a[data-gaby], a[href^="https://wa.me/"]');
     if (!link) return;
     const section = link.getAttribute('data-gaby') || 'unknown';
+    avisarClique(section);
     if (typeof gtag === 'function') {
       gtag('event', 'whatsapp_click', {
         section: section,
@@ -267,6 +293,7 @@ function initSmoothScroll() {
 
 /* ---- Boot ---- */
 document.addEventListener('DOMContentLoaded', () => {
+  origemDaVisita();
   hydrateGabyLinks();
   checkOrphanWppLinks();
   initConsent();
